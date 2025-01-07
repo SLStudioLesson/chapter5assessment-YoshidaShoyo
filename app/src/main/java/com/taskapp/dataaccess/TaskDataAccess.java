@@ -1,8 +1,11 @@
 package com.taskapp.dataaccess;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,31 +53,39 @@ public class TaskDataAccess {
                 }int code = Integer.parseInt(values[0]);
                 String name = values[1];
                 int status = Integer.parseInt(values[2]);
-                ArrayList<User> repUsers = new ArrayList<>();
-                // Task task = new Task(code, name, status, User.getCode());
-
-                // librariesに追加する
-                // tasks.add(task);
+                User repUser = userDataAccess.findByCode(Integer.parseInt(values[3]));
+                Task task = new Task(code, name, status, repUser);
+                tasks.add(task);
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return tasks;
     }
 
     /**
      * タスクをCSVに保存します。
      * @param task 保存するタスク
      */
-    // public void save(Task task) {
-    //     try () {
+    public void save(Task task) {
+        List<Task> tasks = findAll();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write("Code,Name,Status,Rep_User_Code\n");
+            String line;
+            for (Task task2 : tasks) {
+                if (task2.getCode() == task.getCode()) {
+                    line = createLine(task);
+                } else {
+                    line = createLine(task2);
+                }
+                writer.write(line);
+                writer.newLine();
+            }
 
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * コードを基にタスクデータを1件取得します。
@@ -119,6 +130,8 @@ public class TaskDataAccess {
      * @param task フォーマットを作成するタスク
      * @return CSVに書き込むためのフォーマット文字列
      */
-    // private String createLine(Task task) {
-    // }
+    private String createLine(Task task) {
+        return task.getCode() + "," + task.getName() + "," +
+                task.getStatus() + "," + task.getRepUser();
+    }
 }
