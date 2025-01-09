@@ -48,7 +48,10 @@ public class TaskUI {
     public void displayMenu() {
         System.out.println("タスク管理アプリケーションにようこそ!!");
         inputLogin();
+        mainMenu();
+    }
 
+    public void mainMenu(){
         // メインメニュー
         boolean flg = true;
         while (flg) {
@@ -62,7 +65,6 @@ public class TaskUI {
 
                 switch (selectMenu) {
                     case "1":
-                    TaskLogic taskLogic = new TaskLogic();
                     taskLogic.showAll(loginUser);
                     selectSubMenu();
                         break;
@@ -171,10 +173,11 @@ public class TaskUI {
             System.out.println();
             switch (selectMenu) {
                 case "1":
-                inputChangeInformation();
+                    inputChangeInformation();
                     break;
                 case "2":
-                displayMenu();
+                    mainMenu();
+                    break;
                 default:
                     break;
             }
