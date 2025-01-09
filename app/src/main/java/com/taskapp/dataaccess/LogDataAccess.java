@@ -29,9 +29,9 @@ public class LogDataAccess {
      */
     public void save(Log log) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            String line = createLine(log);
             writer.newLine();
-            writer.write(line);
+            writer.write(createLine(log));
+            
         } catch (IOException e) {
             e.printStackTrace();
         }

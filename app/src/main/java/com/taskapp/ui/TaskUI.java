@@ -4,13 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.print.DocFlavor.READER;
 
 import com.taskapp.exception.AppException;
 import com.taskapp.logic.TaskLogic;
 import com.taskapp.logic.UserLogic;
 import com.taskapp.model.User;
-import com.taskapp.exception.AppException;
 
 public class TaskUI {
     private final BufferedReader reader;
@@ -66,8 +64,10 @@ public class TaskUI {
                     case "1":
                     TaskLogic taskLogic = new TaskLogic();
                     taskLogic.showAll(loginUser);
+                    selectSubMenu();
                         break;
                     case "2":
+                    inputNewInformation();
                         break;
                     case "3":
                         System.out.println("ログアウトしました。");
@@ -142,15 +142,16 @@ public class TaskUI {
                     System.out.println("ユーザーのコードは半角の数字で入力してください");
                     System.out.println();
                     continue;
-                }//else if()
+                }
+                taskLogic.save(Integer.parseInt(taskCode),name,loginUser,Integer.parseInt(userCode));
 
                 
                 flg = false;
             } catch (IOException e) {
                 e.printStackTrace();
-            } //catch (AppException e) {
-            //     System.out.println(e.getMessage());
-            // }
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
             System.out.println();
         }
     }
@@ -161,8 +162,26 @@ public class TaskUI {
      * @see #inputChangeInformation()
      * @see #inputDeleteInformation()
      */
-    // public void selectSubMenu() {
-    // }
+    public void selectSubMenu() {
+        try {
+            System.out.println("以下1~2から好きな選択肢を選んでください。");
+            System.out.println("1. タスクのステータス変更, 2. メインメニューに戻る,");
+            System.out.print("選択肢：");
+            String selectMenu = reader.readLine();
+            System.out.println();
+            switch (selectMenu) {
+                case "1":
+                inputChangeInformation();
+                    break;
+                case "2":
+                displayMenu();
+                default:
+                    break;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * ユーザーからのタスクステータス変更情報を受け取り、タスクのステータスを変更します。
@@ -170,8 +189,42 @@ public class TaskUI {
      * @see #isNumeric(String)
      * @see com.taskapp.logic.TaskLogic#changeStatus(int, int, User)
      */
-    // public void inputChangeInformation() {
-    // }
+    public void inputChangeInformation() {
+        boolean flg = true;
+        while (flg) {
+            try{
+                System.out.println("ステータスを変更するタスクコードを入力してください：");
+                String taskCode = reader.readLine();
+                if (!isNumeric(taskCode)) {
+                    System.out.println("コードは半角の数字で入力してください");
+                    System.out.println();
+                    continue;
+                }
+                System.out.println("どのステータスに変更するか選択してください。");
+                System.out.println("1. 着手中, 2. 完了");
+                System.out.println("選択肢：");
+                String status = reader.readLine();
+                if (!isNumeric(status)) {
+                    System.out.println("コードは半角の数字で入力してください");
+                    System.out.println();
+                    continue;
+                }
+                if(!("1".equals(status) || "2".equals(status))) {
+                    System.out.println("ステータスは1・2の中から選択してください");
+                    System.out.println();
+                    continue;
+                }
+
+                taskLogic.changeStatus(Integer.parseInt(taskCode), Integer.parseInt(status), loginUser);
+                flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * ユーザーからのタスク削除情報を受け取り、タスクを削除します。
